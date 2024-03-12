@@ -1,0 +1,114 @@
+{% extends "basic.html" %}
+
+{% block title %}{{ blog.title }}{% endblock title %}
+
+{% block css %}
+<link rel="stylesheet" href="{{url_for('static', filename='css/prism.css')}}">
+
+<style>
+  pre, code {
+    height: 60vh;
+  }
+</style>
+{% endblock css %}
+
+{% block body %}
+<div class="container my-3">
+  <h2><a href="{{request.path}}" class="text-dark">{{blog.title}}</a></h2>
+  <p>Posted: {{blog.createdAt|humanize()}}</p>
+
+  <hr class="my-3">
+
+  <div>
+    {{blog.content|safe}}
+  </div>
+
+  <hr class="my-3">
+
+  <!-- Comments and Replies -->
+  <h2>Comments: ({{comments_count}})</h2>
+  {% if 'user' in session %}
+  <form action="{{url_for('handle_comment_add')}}" method="post">
+    <input type="hidden" name="parent" value="">
+    <input type="hidden" name="post" value="{{blog._id}}">
+    <input type="hidden" name="path" value="{{request.path}}">
+    <div class="form-group">
+      <label for="comment">Comment</label>
+      <textarea name="comment" id="comment" rows="3" class="form-control"
+        placeholder="Enter your comment here..."></textarea>
+    </div>
+    <button class="btn btn-sm btn-danger" type="submit">Post Comment</button>
+  </form>
+  {% else %}
+  <div>
+      <button class="btn btn-danger btn-sm" data-target="#loginModal" data-toggle="modal">Login Here!</button>
+      <button class="btn btn-danger btn-sm" data-target="#signupModal" data-toggle="modal">SignUp Here!</button>
+  </div>
+  {% endif %}
+  <hr>
+  {% if comments %}
+    {% for comment in comments %}
+    <div class="media">
+      <img src="{{url_for('static', filename='images/comment_user_img.png')}}" width="42px" class="mr-3 rounded-circle" alt="...">
+      <div class="media-body">
+        <p class="mt-0 mb-0"><span class="badge badge-secondary">{{comment.user}}</span> &bull; <span class="text-muted">{{comment.createdAt|humanize()}}</span></p>
+        <p>{{comment.comment}}</p>
+        {% if 'user' in session %}
+        <button class="btn btn-sm btn-danger" data-target="#replyBox{{comment._id}}" data-toggle="collapse">Reply</button>
+        <div class="collapse card card-body my-2" id="replyBox{{comment._id}}">
+          <form action="{{url_for('handle_comment_add')}}" method="post">
+            <input type="hidden" name="parent" value="{{comment._id}}">
+            <input type="hidden" name="post" value="{{blog._id}}">
+            <input type="hidden" name="path" value="{{request.path}}">
+            <div class="form-group">
+              <label for="comment">Reply</label>
+              <textarea name="comment" id="comment" rows="3" class="form-control"
+                placeholder="Enter your reply here..."></textarea>
+            </div>
+            <button class="btn btn-sm btn-danger" type="submit">Post Reply</button>
+          </form>
+        </div>
+        {% endif %}
+
+        {% if repDict|get_val(comment._id) %}
+          {% for reply in repDict|get_val(comment._id) %}
+          <div class="media mt-3">
+            <a class="mr-3" href="#">
+              <img src="{{url_for('static', filename='images/comment_user_img.png')}}" width="36px" class="mr-3 rounded-circle" alt="...">
+            </a>
+            <div class="media-body">
+              <p class="mt-0 mb-0"><span class="badge badge-secondary">{{reply.user}}</span> &bull; <span class="text-muted">{{reply.createdAt|humanize()}}</span></p>
+              <p>{{reply.comment}}</p>
+            </div>
+          </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+  <div class="alert alert-secondary">
+    <h5 class="mb-0">No comments found! Please add your first comment.</h5>
+  </div>
+  {% endif %}
+
+  <hr class="my-3">
+
+  <div>
+    {% if nxtBlog %}
+      <a href="{{url_for('post', id=nxtBlog._id)}}" class="btn btn-danger float-right mb-3">Next &raquo;</a>
+    {% else %}
+      <a href="#" class="btn btn-danger float-right disabled mb-3" disabled>Next &raquo;</a>
+    {% endif %}
+    {% if prevBlog %}
+      <a href="{{url_for('post', id=prevBlog._id)}}" class="btn btn-danger float-left mb-3">&laquo; Previous</a>
+    {% else %}
+      <a href="#" class="btn btn-danger float-left disabled mb-3" disabled>&laquo; Previous</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock body %}
+
+{% block js %}
+<script src="{{url_for('static', filename='js/prism.js')}}"></script>
+{% endblock js %}

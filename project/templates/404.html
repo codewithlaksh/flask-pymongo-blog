@@ -1,0 +1,11 @@
+{% extends "basic.html" %}
+
+{% block title %}404 - Page Not Found{% endblock title %}
+
+{% block body %}
+<div class="container my-3" style="height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+  <h3>Oops! The requested url was not found on this server!</h3>
+  <p>Requested URL: {{request.url}}</p>
+  <button class="btn btn-primary" onclick="window.history.back();">&laquo; Go Back</button>
+</div>
+{% endblock body %}

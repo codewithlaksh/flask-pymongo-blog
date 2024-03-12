@@ -1,0 +1,50 @@
+{% extends "basic.html" %}
+
+{% block title %}Admin Dashboard{% endblock title %}
+
+{% block css %}
+<style>
+    ion-icon {
+        font-size: 18px;
+    }
+</style>
+{% endblock css %}
+
+{% block body %}
+<div class="container my-3">
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="media d-flex align-items-center">
+            <img src="{{url_for('static', filename='images/python.png')}}" width="64px" alt="">
+            <div class="media-body ml-3"><h2>Welcome Admin</h2></div>
+        </div>
+        <div class="d-flex">
+            <a href="{{url_for('addpost')}}" class="btn btn-sm btn-secondary d-flex align-items-center mx-2"><i class="fa fa-plus"></i> &nbsp; Create Post</a>
+            <a href="{{url_for('admin_logout')}}" class="btn btn-sm btn-danger d-flex align-items-center mx-2">Logout</a>
+        </div>
+    </div>
+
+    <table class="table table-striped my-4">
+        <thead>
+            <tr>
+                <th style="text-align: center;">S. No.</th>
+                <th style="text-align: center;">Title</th>
+                <th style="text-align: center;">Created</th>
+                <th style="text-align: center;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for blog in blogs %}
+            <tr>
+                <td style="text-align: center;">{{loop.index}}</td>
+                <td style="text-align: center;">{{blog.title|truncate(50)}}</td>
+                <td style="text-align: center;">{{blog.createdAt}}</td>
+                <td style="text-align: center;">
+                    <a href="{{url_for('editpost', id=blog._id)}}" class="btn btn-sm btn-success mx-2"><i class="fa fa-pencil"></i></a>
+                    <a href="{{url_for('deletepost', id=blog._id)}}" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock body %}

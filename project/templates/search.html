@@ -1,0 +1,71 @@
+{% extends "basic.html" %}
+
+{% block title %}Search results for "{{query}}"{% endblock title %}
+
+{% block css %}
+<style>
+  ion-icon {
+    font-size: 20px
+  }
+</style>
+{% endblock css %}
+
+{% block body %}
+<div class="container my-3">
+  <div class="d-flex align-items-center justify-content-between">
+    <h2>Search results for <small>"{{query}}":</small> ({{count}} results)</h2>
+    {% if 'admin' in session %}<a href="{{url_for('addpost')}}" class="btn btn-sm btn-secondary d-flex align-items-center mx-2"><ion-icon name="create"></ion-icon> &nbsp; Create Post</a>{% endif %}
+  </div>
+  
+  <hr class="my-3"></hr>
+
+  {% if count == 0 %}
+  <p class="text-danger">None of the blog posts match your query string "{{query}}"!</p>
+  <p>Please make sure that there isn't any typo in your query.</p>
+  {% else %}
+  {% for blog in blogs %}
+  <div class="card mb-3">
+      <div class="card-header d-flex align-items-center justify-content-between">
+          <p class="mb-0">Posted: {{blog.createdAt}}</p>
+
+          {% if 'admin' in session %}
+          <div class="actions d-flex align-items-center">
+            <a href="{{url_for('editpost', id=blog._id)}}" class="btn btn-sm btn-success d-flex align-items-center mx-2"><ion-icon name="create"></ion-icon> &nbsp; Edit</a>
+            <a href="{{url_for('deletepost', id=blog._id)}}" class="btn btn-sm btn-danger d-flex align-items-center"><ion-icon name="trash-outline"></ion-icon> &nbsp; Delete</a>
+          </div>
+          {% endif %}
+      </div>
+      <div class="card-body">
+          <h4 class="card-title"><a href="{{url_for("post", id=blog._id)}}" class="text-dark">{{blog.title}}</a></h4>
+          <p class="card-text mb-2">{{blog.tagline}}</p>
+          <a href="/post/{{blog._id}}" class="btn btn-sm btn-secondary">Read More &raquo;</a>
+      </div>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+    {% if count != 0 %}
+    <div class="text-center mb-3">
+        <span>Page {{page}} of {{totalPages}}</span>
+      </div>
+    
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+          <li class="page-item {% if not prev %}disabled{% endif %}">
+            <a class="page-link" href="{% if prev %}?page={{prev}}{% else %}#{% endif %}" aria-label="Previous">
+              <span aria-hidden="true">&laquo; Previous</span>
+            </a>
+          </li>
+          {% for i in range(1, totalPages+1) %}
+          <li class="page-item {% if i == page %}active{% endif %}"><a class="page-link" href="?query={{query}}&page={{i}}">{{i}}</a></li>
+          {% endfor %}
+          <li class="page-item {% if not nxt %}disabled{% endif %}">
+            <a class="page-link" href="{% if nxt %}?query={{query}}&page={{nxt}}{% else %}#{% endif %}" aria-label="Next">
+              <span aria-hidden="true">Next &raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    {% endif %}
+{% endblock body %}

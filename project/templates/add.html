@@ -1,0 +1,31 @@
+{% extends "basic.html" %}
+
+{% block title %}Add Post{% endblock title %}
+
+{% block body %}
+<div class="container my-3">
+    <h2>Add Blog Post</h2>
+    <form action="{{request.path}}" method="post">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="title">Post title</label>
+            <input type="text" class="form-control" id="title" name="title">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="tagline">Post tagline</label>
+            <input type="text" class="form-control" id="tagline" name="tagline">
+          </div>
+        </div>
+        <div class="form-group">
+            <label for="ckeditor">Post Content</label>
+            <textarea name="content" id="content" rows="3" class="form-control"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Post</button>
+    </form>
+</div>
+{% endblock body %}
+
+{% block js %}
+<script src="https://cdn.tiny.cloud/1/no_api_key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="{{url_for('static', filename='js/tinymce.js')}}"></script>
+{% endblock js %}
